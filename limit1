@@ -1,0 +1,17 @@
+#!/bin/bash
+
+# Interface jaringan hotspot (ganti jika diperlukan)
+INTERFACE="wlan0"
+
+# Menghapus konfigurasi tc yang ada sebelumnya
+sudo tc qdisc del dev $INTERFACE root
+
+# Menambahkan konfigurasi tc baru untuk membatasi kecepatan
+# Batas kecepatan download 1mbps
+sudo tc qdisc add dev $INTERFACE root handle 1: htb default 30
+sudo tc class add dev $INTERFACE parent 1: classid 1:1 htb rate 1mbit
+
+# Batas kecepatan upload 1mbps
+sudo tc class add dev $INTERFACE parent 1:1 classid 1:10 htb rate 1mbit
+
+echo "Kecepatan download dan upload dibatasi menjadi 1mbps."
